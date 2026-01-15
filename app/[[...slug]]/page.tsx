@@ -1,11 +1,7 @@
-"use client"; // This directive indicates that the code is meant to run on the client side and the server side
-
-import DOMPurify from "dompurify";
+import DOMPurify from "isomorphic-dompurify";
 import Image from "next/image"; // Importing the Image component from Next.js for optimized image rendering
-import { getPage, initLivePreview } from "@/lib/contentstack"; // Importing functions to get page data and initialize live preview from a local library
-import { useEffect, useState } from "react"; // Importing React hooks for side effects and state management
-import { Page } from "@/lib/types"; // Importing the Page type definition from a local types file
-import ContentstackLivePreview, {
+import { getPage } from "@/lib/contentstack"; // Importing functions to get page data and initialize live preview from a local library
+import {
   VB_EmptyBlockParentClass,
 } from "@contentstack/live-preview-utils"; // Importing live preview utilities from Contentstack
 
@@ -20,18 +16,21 @@ import ContentstackLivePreview, {
  * This component uses the `useState` and `useEffect` hooks to manage state and side effects.
  * It initializes live preview functionality and listens for entry changes to update the content.
  */
-export default function Home() {
-  const [page, setPage] = useState<Page>(); // Declaring a state variable 'page' with its setter 'setPage', initially undefined
+export default async function ContentPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ slug: string[] }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  const fullSlug = resolvedParams.slug 
+    ? `/${resolvedParams.slug.join("/")}` 
+    : "/";
 
-  const getContent = async () => {
-    const page = await getPage("/"); // Asynchronously fetching page data for the root URL
-    setPage(page); // Updating the state with the fetched page data
-  };
-
-  useEffect(() => {
-    initLivePreview(); // Initializing live preview functionality
-    ContentstackLivePreview.onEntryChange(getContent); // Setting up an event listener to fetch content on entry change
-  }, []);
+  const page = await getPage(fullSlug, resolvedSearchParams);
+  if (!page) return <div>Page not found</div>;
 
   return (
     <main className="max-w-(--breakpoint-md) mx-auto">
@@ -57,6 +56,11 @@ export default function Home() {
             className="mb-4"
             width={768}
             height={414}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 1200px"
+            style={{
+              width: '100%',
+              height: 'auto',
+            }}
             src={page?.image.url}
             alt={page?.image.title}
             {...(page?.image?.$ && page?.image?.$.url)} // Adding editable tags if available
@@ -71,11 +75,10 @@ export default function Home() {
           />
         ) : null}
         <div
-          className={`space-y-8 max-w-full mt-4 ${
-            !page?.blocks || page.blocks.length === 0
-              ? VB_EmptyBlockParentClass // Adding a class if no blocks are present
-              : ""
-          }`}
+          className={`space-y-8 max-w-full mt-4 ${!page?.blocks || page.blocks.length === 0
+            ? VB_EmptyBlockParentClass // Adding a class if no blocks are present
+            : ""
+            }`}
           {...(page?.$ && page?.$.blocks)} // Adding editable tags if available
         >
           {page?.blocks?.map((item, index) => {
@@ -86,9 +89,8 @@ export default function Home() {
               <div
                 key={block._metadata.uid}
                 {...(page?.$ && page?.$[`blocks__${index}`])} // Adding editable tags if available
-                className={`flex flex-col md:flex-row items-center space-y-4 md:space-y-0 bg-white ${
-                  isImageLeft ? "md:flex-row" : "md:flex-row-reverse" // Adjusting the layout based on the block's layout property
-                }`}
+                className={`flex flex-col md:flex-row items-center space-y-4 md:space-y-0 bg-white ${isImageLeft ? "md:flex-row" : "md:flex-row-reverse" // Adjusting the layout based on the block's layout property
+                  }`}
               >
                 <div className="w-full md:w-1/2">
                   {block.image ? (
@@ -98,6 +100,11 @@ export default function Home() {
                       alt={block.image.title}
                       width={200}
                       height={112}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 1200px"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                      }}
                       className="w-full"
                       {...(block?.$ && block?.$.image)} // Adding editable tags if available
                     />

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"; // Importing the Metadata type from Next.js
 import "./globals.css"; // Importing global CSS styles
+import LivePreviewInit from "./components/livepreview-init";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="en">
       {/* Setting the language attribute for the HTML document */}
       <body>
+        <LivePreviewInit />
         {children}
       </body>
       {/* Rendering the children components inside the body */}
