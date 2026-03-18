@@ -1,0 +1,46 @@
+{
+    "_variant": {
+        "_change_set": [
+            "blocks.short_contact_us_form.csc14245ec3bfa3c07"
+        ],
+        "_order": [
+            {
+                "blocks": [
+                    "base.block.cs08188b1aa983d2c5",
+                    "base.block.cs7b05862b28a7d202",
+                    "base.block.cs9b0ec42043a5767e",
+                    "variant.short_contact_us_form.csc14245ec3bfa3c07"
+                ]
+            }
+        ],
+        "_uid": "cs74853e2bf3002682",
+        "_instance_uid": "bltfdf4a8c93e51f306c672",
+        "_base_entry_version": 10
+    },
+    "uid": "blt08b32a0f663ce6a6",
+    "_version": 1,
+    "blocks": [
+        {
+            "short_contact_us_form": {
+                "title": "Contact Us",
+                "_metadata": {
+                    "uid": "csc14245ec3bfa3c07",
+                    "action": "add"
+                },
+                "description": {
+                    "uid": "9e6ffac39dfa4d8d800c60ba70958fbe",
+                    "_version": 1
+                },
+                "first_name_label": "First Name",
+                "last_name_label": "Last Name",
+                "email_label": "Email"
+            }
+        }
+    ],
+    "created_at": "2026-02-25T17:29:15.358Z",
+    "created_by": "cs5f5b4e04bc3545f5",
+    "locale": "en-us",
+    "tags": [],
+    "updated_at": "2026-02-25T17:29:15.358Z",
+    "updated_by": "cs5f5b4e04bc3545f5"
+}

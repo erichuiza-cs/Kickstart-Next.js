@@ -9,6 +9,7 @@ import { Page } from "./types";
 
 // helper functions from private package to retrieve Contentstack endpoints in a convienient way
 import { getContentstackEndpoints, getRegionForString } from "@timbenniks/contentstack-endpoints";
+import { ImageLoaderProps } from "next/image";
 
 // Set the region by string value from environment variables
 const region = getRegionForString(process.env.NEXT_PUBLIC_CONTENTSTACK_REGION as string)
@@ -50,7 +51,7 @@ export const stack = contentstack.stack({
 // Initialize live preview functionality
 export function initLivePreview() {
   ContentstackLivePreview.init({
-    ssr: false, // Disabling server-side rendering for live preview
+    ssr: true, 
     enable: process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true', // Enabling live preview if specified in environment variables
     mode: "builder", // Setting the mode to "builder" for visual builder
     stackSdk: stack.config as IStackSdk, // Passing the stack configuration
@@ -70,7 +71,11 @@ export function initLivePreview() {
   });
 }
 // Function to fetch page data based on the URL
-export async function getPage(url: string) {
+export async function getPage(url: string, searchParams?: any) {
+  if (searchParams) {
+    stack.livePreviewQuery(searchParams);
+  }
+
   const result = await stack
     .contentType("page") // Specifying the content type as "page"
     .entry() // Accessing the entry
@@ -87,4 +92,14 @@ export async function getPage(url: string) {
 
     return entry; // Returning the fetched entry
   }
+}
+export default function imageLoader({ src, width, quality }: ImageLoaderProps) {
+  const url = new URL(src);
+  
+  url.searchParams.set('width', width.toString());
+  url.searchParams.set('dpr', '1'); 
+  url.searchParams.set('quality', (quality || 75).toString());
+  url.searchParams.set('format', 'webp');
+  
+  return url.href;
 }
