@@ -19,9 +19,7 @@ export default function RootLayout({
       {/* Setting the language attribute for the HTML document */}
       <body>
         <LivePreviewInit />
-        {/* <PersonalizeProvider> */}
-          {children}
-        {/* </PersonalizeProvider> */}
+        <PersonalizeProvider>{children}</PersonalizeProvider>
       </body>
       {/* Rendering the children components inside the body */}
     </html>

@@ -100,3 +100,33 @@ Go to `http://localhost:3000`.
 Go to Entries and select the only entry in the list.
 In the sidebar, click on the live preview icon.
 Or, see your entry in the visual builder
+
+---
+
+## Healio-inspired news demo (`/news`)
+
+Uses Content Type **`news_page`** (see [docs/CT_MAPPING.md](docs/CT_MAPPING.md)).
+
+| Area | Mode | Description |
+|------|------|-------------|
+| Landing + article pages | **SSR** | Fetches `news_page` entries; **JSON RTE** `copy` / `perspective.expert_commentary` → HTML via `@contentstack/utils`. Optional `?variants=alias1,alias2` for **Personalize** variant content on articles. |
+| **Trending** | **CSR** | `/api/news/trending` + **Personalize** `getVariantAliases()` when the SDK is active. Live Preview refetch on entry change. |
+| **For you** | **CSR + Personalize** | `/api/news/for-you` with variant aliases so Delivery returns **personalized entry variants**. |
+
+**URLs** (match stack URL pattern `news/:year/:month/:day/:title`):
+
+- Landing: `/news`
+- With CMS: `/news/2026/03/18/your-entry-slug` (exact `url` field on the entry)
+- Fallback demos: `/news/2026/03/18/fda-reproxalap-dry-eye` etc.
+
+**Contentstack Personalize**
+
+```env
+NEXT_PUBLIC_PERSONALIZE_PROJECT_UID=<project_uid>
+# Optional: impression when “For you” renders (experience short UID, e.g. a)
+NEXT_PUBLIC_PERSONALIZE_FOR_YOU_EXPERIENCE_UID=a
+# Optional: attribute key for specialty chips (must exist in Personalize)
+NEXT_PUBLIC_PERSONALIZE_SPECIALTY_ATTR=specialty
+```
+
+`PersonalizeProvider` loads **`@contentstack/personalize-edge-sdk`** in the root layout.
