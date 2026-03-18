@@ -4,18 +4,16 @@ import { getPage } from "@/lib/contentstack"; // Importing functions to get page
 import {
   VB_EmptyBlockParentClass,
 } from "@contentstack/live-preview-utils"; // Importing live preview utilities from Contentstack
+import BlockComponent from "../components/BlockComponent";
+import ShortFormComponent from "../components/ShortFormComponent";
+import LongFormComponent from "../components/LongFormComponent";
 
-/**
- * The `Home` component is the main page component for the application.
- * It fetches and displays content from Contentstack, including the page title,
- * description, image, rich text, and blocks.
- *
- * @component
- * @returns {JSX.Element} The rendered component.
- *
- * This component uses the `useState` and `useEffect` hooks to manage state and side effects.
- * It initializes live preview functionality and listens for entry changes to update the content.
- */
+const componentMap: { [key: string]: React.FC<any> } = {
+  // ShortFormComponent,
+  // LongFormComponent,
+  BlockComponent,
+};
+
 export default async function ContentPage({
   params,
   searchParams
@@ -82,55 +80,8 @@ export default async function ContentPage({
           {...(page?.$ && page?.$.blocks)} // Adding editable tags if available
         >
           {page?.blocks?.map((item, index) => {
-            const { block } = item;
-            const isImageLeft = block.layout === "image_left"; // Checking the layout of the block
-
-            return (
-              <div
-                key={block._metadata.uid}
-                {...(page?.$ && page?.$[`blocks__${index}`])} // Adding editable tags if available
-                className={`flex flex-col md:flex-row items-center space-y-4 md:space-y-0 bg-white ${isImageLeft ? "md:flex-row" : "md:flex-row-reverse" // Adjusting the layout based on the block's layout property
-                  }`}
-              >
-                <div className="w-full md:w-1/2">
-                  {block.image ? (
-                    <Image
-                      key={`image-${block._metadata.uid}`}
-                      src={block.image.url}
-                      alt={block.image.title}
-                      width={200}
-                      height={112}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 1200px"
-                      style={{
-                        width: '100%',
-                        height: 'auto',
-                      }}
-                      className="w-full"
-                      {...(block?.$ && block?.$.image)} // Adding editable tags if available
-                    />
-                  ) : null}
-                </div>
-                <div className="w-full md:w-1/2 p-4">
-                  {block.title ? (
-                    <h2
-                      className="text-2xl font-bold"
-                      {...(block?.$ && block?.$.title)} // Adding editable tags if available
-                    >
-                      {block.title} {/* Rendering the block title */}
-                    </h2>
-                  ) : null}
-                  {block.copy ? (
-                    <div
-                      {...(block?.$ && block?.$.copy)} // Adding editable tags if available
-                      dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(block.copy),
-                      }} // Rendering block copy as HTML
-                      className="prose"
-                    />
-                  ) : null}
-                </div>
-              </div>
-            );
+            const Component = componentMap[item.type] || BlockComponent;
+            return <Component key={index} {...item} />;
           })}
         </div>
       </section>

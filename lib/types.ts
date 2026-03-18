@@ -44,19 +44,48 @@ export interface Taxonomy {
   non_localizable: boolean;
 }
 
-// Block object - Represents a modular block in Contentstack
+// Block object - Represents a generic modular block in Contentstack
 export interface Block {
-  _version?: number;
-  _metadata: any;
-  $: any;
+  type: "Block";
+  _metadata: {
+    uid: string;
+  };
+  layout: string;
+  image?: {
+    url: string;
+    title: string;
+    $?: any;
+  };
   title?: string;
   copy?: string;
-  image?: File | null;
-  layout?: ("image_left" | "image_right") | null;
+  $?: any;
 }
 
-export interface Blocks {
-  block: Block;
+// ShortForm object - Represents a short form block in Contentstack
+export interface ShortForm {
+  type: "ShortForm";
+  title: string;
+  description: string;
+  cta: string;
+  first_name_label: string;
+  email_label: string;
+  _metadata?: object;
+  _version?: number;
+  $?: any;
+}
+
+// LongForm object - Represents a long form block in Contentstack
+export interface LongForm {
+  type: "LongForm";
+  title: string;
+  description: string;
+  cta: string;
+  first_name_label: string;
+  last_name_label: string;
+  email_label: string;
+  _metadata?: object;
+  _version?: number;
+  $?: any;
 }
 
 // Page object - Represents a page in Contentstack
@@ -69,5 +98,5 @@ export interface Page {
   description?: string;
   image?: File | null;
   rich_text?: string;
-  blocks?: Blocks[];
+  blocks?: (Block | ShortForm | LongForm)[]; // Updated to include all block types
 }
